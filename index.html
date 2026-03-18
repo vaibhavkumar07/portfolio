@@ -730,7 +730,7 @@ function sendMsg(ev) {
     if (d.success) { stat.textContent = '✓ Message sent! Vaibhav will get back to you soon.'; stat.className = 'fstat ok show'; document.getElementById('cform').reset(); }
     else throw new Error(d.message);
   }).catch(() => {
-    if (W3F_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY') { stat.textContent = '⚙️ Setup needed: add your Web3Forms key.'; stat.className = 'fstat err show'; }
+    if (W3F_KEY === 'e0c267a2-3362-48fb-8842-5fe3783590f7') { stat.textContent = '⚙️ Setup needed: add your Web3Forms key.'; stat.className = 'fstat err show'; }
     else { stat.textContent = '✗ Could not send. Please try again.'; stat.className = 'fstat err show'; }
   }).finally(() => { txt.textContent = 'Send Message →'; btn.disabled = false; });
 }
