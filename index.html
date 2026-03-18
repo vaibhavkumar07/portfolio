@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaibhavkumar Yadav | Genesys Cloud Developer & CX Architect</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+/* ── TOKENS ── */
+:root{
+  --brand:#1B6FE8;--brand2:#3B8EFF;--teal:#00C9A7;--gold:#F5A623;
+  --bg:linear-gradient(135deg,#EEF4FF 0%,#F5F0FF 50%,#EEF9FF 100%);
+  --nav:rgba(255,255,255,0.82);
+  --card:rgba(255,255,255,0.60);--card2:rgba(255,255,255,0.42);--card3:rgba(255,255,255,0.28);
+  --gb:rgba(255,255,255,0.65);--gb2:rgba(180,200,255,0.30);
+  --t1:#0F1F3D;--t2:#3D5280;--t3:#7A90B8;--t4:#B0C0D8;
+  --sh:0 8px 32px rgba(27,111,232,0.12);--sh2:0 4px 16px rgba(27,111,232,0.08);
+}
+[data-theme="dark"]{
+  --bg:linear-gradient(135deg,#050D1A 0%,#0A1628 50%,#080E1E 100%);
+  --nav:rgba(5,13,26,0.88);
+  --card:rgba(255,255,255,0.06);--card2:rgba(255,255,255,0.04);--card3:rgba(255,255,255,0.02);
+  --gb:rgba(255,255,255,0.12);--gb2:rgba(27,111,232,0.25);
+  --t1:#E8F0FF;--t2:#8AA8D8;--t3:#4A6890;--t4:#2A4060;
+  --sh:0 8px 32px rgba(0,0,0,0.45);--sh2:0 4px 16px rgba(0,0,0,0.30);
+}
+
+/* ── RESET ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);background-attachment:fixed;color:var(--t1);font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;overflow-x:hidden;cursor:none;min-height:100vh;transition:background .4s,color .3s}
+
+/* ── CURSOR ── */
+#cur{position:fixed;width:18px;height:18px;border:2px solid var(--brand);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s,border-color .2s}
+#curdot{position:fixed;width:5px;height:5px;background:var(--teal);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+
+/* ── CANVAS ── */
+#canvas3d{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:68px;background:var(--nav);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--gb);box-shadow:0 1px 24px rgba(0,0,0,0.08);transition:background .3s}
+.nl{display:flex;align-items:center;gap:10px;text-decoration:none}
+.ni{width:40px;height:40px;background:linear-gradient(135deg,var(--brand),var(--brand2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;box-shadow:0 4px 12px rgba(27,111,232,.35)}
+.nt{font-weight:800;font-size:15px;color:var(--t1);letter-spacing:-.3px}
+.nlinks{display:flex;list-style:none}
+.nlinks a{display:block;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--t2);text-decoration:none;border-radius:8px;transition:all .2s}
+.nlinks a:hover{background:var(--card);color:var(--brand)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.toggle-pill{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--gb);border-radius:22px;padding:5px 12px 5px 8px;cursor:pointer;transition:all .2s;backdrop-filter:blur(10px)}
+.toggle-pill:hover{background:var(--card2);border-color:var(--brand)}
+.toggle-icon{font-size:14px}
+.toggle-label{font-size:11px;font-weight:700;color:var(--t2)}
+.toggle-sw{width:30px;height:16px;background:var(--t4);border-radius:8px;position:relative;transition:background .25s;flex-shrink:0}
+.toggle-sw::after{content:'';position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle-pill.on .toggle-sw{background:var(--brand)}
+.toggle-pill.on .toggle-sw::after{transform:translateX(14px)}
+.toggle-pill.on .toggle-label{color:var(--brand)}
+.ncta{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:9px 20px;border-radius:10px;font-size:12.5px;font-weight:700;text-decoration:none;transition:all .25s;box-shadow:0 4px 14px rgba(27,111,232,.3)}
+.ncta:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(27,111,232,.45)}
+
+/* ── LAYOUT ── */
+section{position:relative;z-index:2}
+.si{max-width:1200px;margin:0 auto;padding:100px 56px}
+.ey{font-size:10.5px;font-weight:700;color:var(--brand);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px;display:block}
+.sh{font-size:clamp(1.9rem,3.2vw,2.7rem);font-weight:800;color:var(--t1);letter-spacing:-1px;line-height:1.08}
+.ss{font-size:1rem;color:var(--t2);margin-top:14px;max-width:540px;line-height:1.78}
+.shdr{margin-bottom:56px}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;align-items:center}
+.hgrid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;padding:120px 56px 80px;width:100%}
+.hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,201,167,.12);border:1px solid rgba(0,201,167,.35);border-radius:22px;padding:5px 14px 5px 8px;font-size:11.5px;font-weight:700;color:var(--teal);margin-bottom:24px;opacity:0;animation:su .7s .2s forwards}
+.hbdot{width:8px;height:8px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+.hname{font-size:clamp(2.6rem,5vw,4.4rem);font-weight:800;line-height:1.02;color:var(--t1);letter-spacing:-2px;margin-bottom:14px;opacity:0;animation:su .7s .35s forwards}
+.hname span{background:linear-gradient(135deg,var(--brand),var(--brand2),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.htitle{font-size:1.02rem;color:var(--t2);line-height:1.78;margin-bottom:36px;max-width:490px;opacity:0;animation:su .7s .5s forwards}
+.hbtns{display:flex;gap:12px;flex-wrap:wrap;opacity:0;animation:su .7s .65s forwards}
+.bgrad{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:13px 28px;border-radius:11px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 6px 24px rgba(27,111,232,.35);transition:all .25s;display:inline-block}
+.bgrad:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(27,111,232,.45)}
+.bglass{background:var(--card2);color:var(--t1);border:1.5px solid var(--gb);padding:12px 24px;border-radius:11px;font-size:14px;font-weight:600;text-decoration:none;transition:all .25s;display:inline-block;backdrop-filter:blur(10px)}
+.bglass:hover{background:var(--card);border-color:var(--brand);color:var(--brand)}
+.hstats{display:flex;gap:36px;margin-top:48px;padding-top:36px;border-top:1px solid var(--gb2);opacity:0;animation:su .7s .8s forwards;flex-wrap:wrap}
+.snum{font-size:2.6rem;font-weight:800;display:block;line-height:1;letter-spacing:-1.5px;background:linear-gradient(135deg,var(--brand),var(--brand2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.slbl{font-size:10.5px;color:var(--t3);font-weight:600;margin-top:5px;letter-spacing:.06em;text-transform:uppercase}
+
+/* ── SME CARD ── */
+.hcwrap{opacity:0;transform:translateY(22px);position:relative;padding-top:28px}
+.hcwrap.vis{opacity:1;transform:translateY(0);transition:opacity .6s ease,transform .6s ease}
+.hcbadge{position:absolute;top:12px;left:24px;background:linear-gradient(135deg,var(--teal),#00a88a);color:#fff;border-radius:22px;padding:6px 18px;font-size:10.5px;font-weight:800;letter-spacing:.07em;box-shadow:0 6px 20px rgba(0,201,167,.4);z-index:1;white-space:nowrap}
+.hcard{background:linear-gradient(145deg,rgba(15,31,61,0.96),rgba(10,20,45,0.99));border-radius:24px;padding:36px;border:1px solid rgba(255,255,255,.08);box-shadow:0 32px 80px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);position:relative;overflow:hidden;transition:all .3s}
+.hcard:hover{border-color:rgba(27,111,232,.45);transform:translateY(-5px);box-shadow:0 20px 60px rgba(27,111,232,.18)}
+.hcard::before{content:'';position:absolute;top:-80px;right:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(27,111,232,.25) 0%,transparent 70%)}
+.hcard::after{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,167,.18) 0%,transparent 70%)}
+.hctag{font-family:'DM Mono',monospace;font-size:9px;color:var(--teal);letter-spacing:2.5px;margin-bottom:18px;opacity:.8}
+.hct{font-size:1.22rem;font-weight:800;color:#fff;margin-bottom:4px;letter-spacing:-.3px}
+.hcs{font-size:11.5px;color:rgba(170,190,220,.7);margin-bottom:24px}
+.hcg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.hcm{background:rgba(255,255,255,.06);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,.08);transition:background .2s;backdrop-filter:blur(4px)}
+.hcm:hover{background:rgba(255,255,255,.11)}
+.hcv{font-size:1.28rem;font-weight:800;color:#fff;letter-spacing:-.2px}
+.hcl{font-size:9.5px;color:rgba(170,190,220,.6);margin-top:3px}
+.hcstrip{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:0}
+.hctag2{font-size:9.5px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(180,200,230,.8);border:1px solid rgba(255,255,255,.1)}
+.hcaward{display:flex;align-items:center;gap:12px;margin-top:16px;padding:13px 18px;background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--gb);border-radius:14px;box-shadow:var(--sh2);transition:all .25s}
+.hcaward:hover{background:var(--card2);border-color:rgba(245,166,35,.4)}
+.hcaico{font-size:22px;flex-shrink:0}
+.hcalbl{font-size:10px;color:var(--t3);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px}
+.hcaval{font-size:13.5px;font-weight:700;color:var(--t1)}
+
+/* ── ABOUT ── */
+.agrid{display:grid;grid-template-columns:250px 1fr;gap:56px;align-items:start}
+.aava{width:220px;height:220px;background:linear-gradient(135deg,rgba(27,111,232,.15),rgba(0,201,167,.1));border:1.5px solid var(--gb);border-radius:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;backdrop-filter:blur(10px);box-shadow:var(--sh)}
+.ainit{font-size:3.8rem;font-weight:800;background:linear-gradient(135deg,var(--brand),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-2px}
+.atxt p{font-size:.975rem;line-height:1.84;color:var(--t2);margin-bottom:16px}
+.atxt strong{color:var(--t1);font-weight:700}
+.adet{display:flex;flex-direction:column;gap:8px;margin-top:20px;padding-top:20px;border-top:1px solid var(--gb2)}
+.arow{display:flex;gap:14px;align-items:baseline}
+.albl{color:var(--brand);font-weight:700;min-width:80px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;flex-shrink:0}
+.aval{color:var(--t2);font-size:13.5px;font-weight:500}
+
+/* ── EXPERTISE ── */
+.egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.ecard{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--gb);border-radius:20px;padding:28px;transition:all .3s;opacity:0;transform:translateY(22px);box-shadow:var(--sh2)}
+.ecard.vis{opacity:1;transform:translateY(0)}
+.ecard:hover{background:var(--card2);border-color:rgba(27,111,232,.35);transform:translateY(-5px);box-shadow:0 16px 48px rgba(27,111,232,.15)}
+.eico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px}
+.eb{background:rgba(27,111,232,.18);border:1px solid rgba(27,111,232,.2)}
+.et{background:rgba(0,201,167,.15);border:1px solid rgba(0,201,167,.2)}
+.eg{background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.2)}
+.ep{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.2)}
+.etitle{font-weight:700;font-size:1rem;color:var(--t1);margin-bottom:8px}
+.edesc{font-size:13px;color:var(--t2);line-height:1.7}
+.etags{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
+.etag{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--card3);color:var(--t2);border:1px solid var(--gb)}
+
+/* ── AI SECTION ── */
+.aigrid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
+.aicards{display:flex;flex-direction:column;gap:14px}
+.aicard{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--gb);border-radius:16px;padding:20px 22px;display:flex;gap:16px;align-items:flex-start;transition:all .25s;opacity:0;transform:translateX(-22px);box-shadow:var(--sh2)}
+.aicard.vis{opacity:1;transform:translateX(0)}
+.aicard:hover{background:var(--card2);border-color:rgba(0,201,167,.35);transform:translateX(4px)}
+.aiico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:rgba(0,201,167,.12);border:1px solid rgba(0,201,167,.2)}
+.ait{font-weight:700;color:var(--t1);font-size:13.5px;margin-bottom:4px}
+.aid{font-size:12.5px;color:var(--t2);line-height:1.65}
+.aiflow{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--gb);border-radius:22px;padding:30px;box-shadow:var(--sh2)}
+.afvt{font-family:'DM Mono',monospace;font-size:10px;color:var(--brand);letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px}
+.afs{display:flex;flex-direction:column;gap:4px}
+.afstep{display:flex;align-items:center;gap:13px;padding:11px 14px;border-radius:10px;background:var(--card3);border:1px solid var(--gb);transition:all .2s;backdrop-filter:blur(6px)}
+.afstep:hover{background:var(--card2);border-color:rgba(27,111,232,.3)}
+.afn{width:23px;height:23px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.afl{font-size:12.5px;color:var(--t2);font-weight:500}
+.afcon{width:2px;height:8px;background:var(--gb2);margin-left:26px}
+
+/* ── TIMELINE ── */
+.tl{position:relative}
+.tl::before{content:'';position:absolute;left:7px;top:12px;bottom:0;width:2px;background:linear-gradient(to bottom,var(--brand),transparent)}
+.tli{padding-left:36px;margin-bottom:32px;position:relative;opacity:0;transform:translateX(-14px)}
+.tli.vis{opacity:1;transform:translateX(0);transition:all .5s}
+.tld{position:absolute;left:0;top:12px;width:16px;height:16px;border-radius:50%;background:var(--card);border:3px solid var(--brand);box-shadow:var(--sh2)}
+.tld.cur{background:var(--brand);box-shadow:0 0 0 5px rgba(27,111,232,.18)}
+.tlc{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--gb);border-radius:16px;padding:22px 26px;transition:all .25s;box-shadow:var(--sh2)}
+.tlc:hover{background:var(--card2);box-shadow:var(--sh);border-color:rgba(27,111,232,.3);transform:translateX(4px)}
+.tlp{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--brand);font-weight:500;letter-spacing:.06em;margin-bottom:5px}
+.tlr{font-weight:700;font-size:1.05rem;color:var(--t1)}
+.tlco{font-size:13.5px;color:var(--brand2);font-weight:700;margin-top:2px}
+.tll{font-size:12.5px;color:var(--t3);margin-top:5px}
+.tltags{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.tltag{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(27,111,232,.1);color:var(--brand);border:1px solid rgba(27,111,232,.2)}
+
+/* ── PROJECTS ── */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px}
+.flip{height:230px;perspective:1200px;cursor:pointer}
+.finner{width:100%;height:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.4,.2,.2,1.1);position:relative}
+.flip:hover .finner{transform:rotateY(180deg)}
+.ff,.fb{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:26px;border:1px solid var(--gb);border-radius:18px;box-shadow:var(--sh2)}
+.ff{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.fb{transform:rotateY(180deg);background:linear-gradient(145deg,rgba(15,31,61,.97),rgba(10,20,45,.99));border-color:rgba(27,111,232,.3);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.ffico{font-size:2.2rem;margin-bottom:12px}
+.fft{font-weight:800;font-size:1rem;color:var(--t1);margin-bottom:6px}
+.ffs{font-size:12.5px;color:var(--t2);line-height:1.55}
+.fbt{font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.fbd{font-size:12.5px;color:rgba(180,210,255,.85);line-height:1.68}
+
+/* ── SKILLS ── */
+.swrap{display:grid;grid-template-columns:1fr 1fr;gap:64px}
+.sgt{font-weight:700;font-size:13.5px;color:var(--t1);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.sgd{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--teal));flex-shrink:0}
+.sitems{display:flex;flex-direction:column;gap:14px}
+.skrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.skn{font-size:13px;font-weight:600;color:var(--t2)}
+.skp{font-family:'DM Mono',monospace;font-size:11px;color:var(--brand);font-weight:600}
+.sktrk{height:6px;background:var(--card3);border-radius:6px;overflow:hidden;border:1px solid var(--gb)}
+.skf{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--brand),var(--brand2));width:0%;transition:width 1.4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px rgba(27,111,232,.3)}
+.skf.tl{background:linear-gradient(90deg,var(--teal),#00a88a);box-shadow:0 0 8px rgba(0,201,167,.3)}
+.skf.lo{background:linear-gradient(90deg,rgba(27,111,232,.3),rgba(59,142,255,.3))}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:12px;font-weight:600;padding:6px 14px;border-radius:10px;background:var(--card3);border:1px solid var(--gb);color:var(--t2);transition:all .25s;cursor:default;backdrop-filter:blur(6px)}
+.chip:hover{background:var(--card2);border-color:rgba(27,111,232,.35);color:var(--brand)}
+.chip.p{background:rgba(27,111,232,.1);border-color:rgba(27,111,232,.25);color:var(--brand)}
+
+/* ── CERTS ── */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.ccard{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--gb);border-radius:16px;padding:22px 18px;text-align:center;transition:all .3s;opacity:0;transform:translateY(18px);box-shadow:var(--sh2)}
+.ccard.vis{opacity:1;transform:translateY(0)}
+.ccard:hover{background:var(--card2);box-shadow:var(--sh);border-color:rgba(27,111,232,.3);transform:translateY(-4px)}
+.cico{width:50px;height:50px;border-radius:13px;background:rgba(27,111,232,.1);border:1px solid rgba(27,111,232,.18);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 13px}
+.cn{font-size:13px;font-weight:700;color:var(--t1);line-height:1.4}
+.ci{font-size:10.5px;color:var(--t3);margin-top:5px;font-weight:500}
+
+/* ── AWARDS ── */
+.agrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:16px}
+.awcard{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--gb);border-radius:16px;padding:24px 18px;text-align:center;transition:all .3s;opacity:0;transform:scale(.94);box-shadow:var(--sh2)}
+.awcard.vis{opacity:1;transform:scale(1)}
+.awcard:hover{background:var(--card2);box-shadow:var(--sh);border-color:rgba(245,166,35,.45);transform:translateY(-3px)}
+.awico{font-size:26px;margin-bottom:10px}
+.awn{font-size:12.5px;font-weight:700;color:var(--t1)}
+.awo{font-size:10.5px;color:var(--t3);margin-top:3px;font-weight:500}
+
+/* ── PATENT ── */
+.ptcard{background:linear-gradient(145deg,rgba(15,31,61,.96),rgba(10,20,45,.99));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(27,111,232,.25);border-radius:24px;padding:40px 46px;display:flex;gap:32px;align-items:flex-start;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.ptico{width:66px;height:66px;background:rgba(27,111,232,.15);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;border:1px solid rgba(27,111,232,.2)}
+.ptlbl{font-size:10.5px;font-weight:800;color:var(--teal);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.ptt{font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:10px;letter-spacing:-.3px}
+.ptd{font-size:14px;color:rgba(180,200,230,.75);line-height:1.74}
+
+/* ── EDUCATION ── */
+.educard{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--gb);border-radius:20px;padding:32px 36px;display:flex;gap:28px;align-items:center;box-shadow:var(--sh2);transition:all .3s}
+.educard:hover{background:var(--card2);transform:translateY(-2px);box-shadow:var(--sh)}
+.eduico{width:64px;height:64px;background:rgba(27,111,232,.1);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;border:1px solid rgba(27,111,232,.18)}
+.edud{font-weight:800;font-size:1.1rem;color:var(--t1);margin-bottom:5px}
+.edus{font-size:14px;color:var(--brand2);font-weight:700;margin-bottom:5px}
+.edup{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--t3)}
+
+/* ── CONTACT ── */
+.ctgrid{display:grid;grid-template-columns:1fr 1fr;gap:52px}
+.ctitems{display:flex;flex-direction:column;gap:12px}
+.ctitem{display:flex;gap:16px;align-items:center;padding:17px 22px;border-radius:14px;background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--gb);transition:all .25s;box-shadow:var(--sh2)}
+.ctitem:hover{background:var(--card2);border-color:rgba(0,201,167,.3);transform:translateX(4px)}
+.ctico{width:40px;height:40px;background:rgba(27,111,232,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid rgba(27,111,232,.15)}
+.ctlbl{font-size:10.5px;color:var(--t3);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px}
+.ctval{font-size:13.5px;font-weight:600;color:var(--t1);text-decoration:none;transition:color .2s}
+.ctval:hover{color:var(--teal)}
+.formbox{background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--gb);border-radius:22px;padding:34px;box-shadow:var(--sh)}
+.formh{font-size:1.3rem;font-weight:800;color:var(--t1);margin-bottom:22px;letter-spacing:-.3px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.fl{font-size:10.5px;font-weight:700;color:var(--t3);letter-spacing:.08em;text-transform:uppercase}
+.fi{background:var(--card3);border:1px solid var(--gb);border-radius:10px;padding:12px 15px;font-size:14px;color:var(--t1);font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:all .25s;width:100%;backdrop-filter:blur(6px)}
+.fi::placeholder{color:var(--t4)}
+.fi:focus{border-color:var(--brand);background:var(--card2);box-shadow:0 0 0 3px rgba(27,111,232,.1)}
+.fta{min-height:115px;resize:vertical}
+.fbtn{width:100%;padding:14px;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:14px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;border:none;cursor:pointer;transition:all .25s;margin-top:4px;box-shadow:0 6px 20px rgba(27,111,232,.3)}
+.fbtn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(27,111,232,.45)}
+.fbtn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.fstat{margin-top:12px;font-size:13px;font-weight:600;text-align:center;border-radius:10px;padding:0;max-height:0;overflow:hidden;transition:all .35s}
+.fstat.show{max-height:60px;padding:11px 14px}
+.fstat.ok{background:rgba(0,201,167,.12);color:var(--teal);border:1px solid rgba(0,201,167,.25)}
+.fstat.err{background:rgba(255,80,80,.1);color:#ff7070;border:1px solid rgba(255,80,80,.2)}
+
+/* ── FOOTER ── */
+footer{background:var(--card2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--gb);padding:28px 56px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;position:relative;z-index:2}
+.ftlogo{font-size:14px;font-weight:800;color:var(--t1)}
+.fttxt{font-size:11.5px;color:var(--t3)}
+.ftlinks{display:flex;gap:18px}
+.ftlink{font-size:12px;color:var(--teal);text-decoration:none;font-weight:700;transition:opacity .2s}
+.ftlink:hover{opacity:.7}
+
+/* ── ANIMATIONS ── */
+@keyframes su{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){.egrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){
+  .hgrid,.aigrid,.agrid,.swrap,.ctgrid{grid-template-columns:1fr}
+  .hcwrap{display:none}
+  nav{padding:0 20px}
+  .nlinks{display:none}
+  .si{padding:72px 24px}
+  .hgrid{padding:100px 24px 60px}
+  .ptcard,.educard{flex-direction:column}
+  footer{padding:20px 24px}
+  .egrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="curdot"></div>
+<canvas id="canvas3d"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nl">
+    <div class="ni">VY</div>
+    <span class="nt">Vaibhavkumar Yadav</span>
+  </a>
+  <ul class="nlinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#expertise">Expertise</a></li>
+    <li><a href="#ai">AI & Bots</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="toggle-pill on" id="darkToggle" onclick="toggleDark()">
+      <span class="toggle-icon">🌙</span>
+      <span class="toggle-label">Dark</span>
+      <div class="toggle-sw"></div>
+    </div>
+    <a href="Vaibhav_Yadav_Resume.pdf" download class="ncta">Resume ↓</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hgrid">
+    <div>
+      <div class="hbadge"><span class="hbdot"></span>Available for New Opportunities</div>
+      <h1 class="hname">Genesys Cloud<br><span>Developer</span> &<br>CX Architect</h1>
+      <p class="htitle">7+ years at Infosys building enterprise contact center solutions — AI-powered bots, IVR flows, Azure TTS/STT, OpenAI & Dialogflow integrations for Healthcare & E-commerce.</p>
+      <div class="hbtns">
+        <a href="#contact" class="bgrad">Get In Touch</a>
+        <a href="Vaibhav_Yadav_Resume.pdf" download class="bglass">Resume ↓</a>
+        <a href="https://www.linkedin.com/in/vaibhavkumar-yadav-633552233" target="_blank" class="bglass">LinkedIn ↗</a>
+      </div>
+      <div class="hstats">
+        <div><span class="snum" data-count="7">0</span><span class="slbl">Years Exp</span></div>
+        <div><span class="snum" data-count="11">0</span><span class="slbl">Certifications</span></div>
+        <div><span class="snum" data-count="7">0</span><span class="slbl">Awards</span></div>
+        <div><span class="snum" data-count="5">0</span><span class="slbl">Projects</span></div>
+      </div>
+    </div>
+    <!-- SME CARD -->
+    <div class="hcwrap" id="hcwrap">
+      <div class="hcbadge">INFOSYS GENESYS CLOUD SME</div>
+      <div class="hcard">
+        <div class="hctag">// GENESYS CLOUD CX · HEALTHCARE & E-COMMERCE</div>
+        <div class="hct">Contact Center Architecture</div>
+        <div class="hcs">Package Consultant 2 · Infosys Limited · Richardson, TX</div>
+        <div class="hcg">
+          <div class="hcm"><div class="hcv">7+ yrs</div><div class="hcl">Genesys Cloud CX</div></div>
+          <div class="hcm"><div class="hcv">11</div><div class="hcl">Infosys Certs</div></div>
+          <div class="hcm"><div class="hcv">2 Domains</div><div class="hcl">Healthcare + E-comm</div></div>
+          <div class="hcm"><div class="hcv">1 Patent</div><div class="hcl">IoT Smart Home</div></div>
+        </div>
+        <div class="hcstrip">
+          <span class="hctag2">Architect & IVR</span>
+          <span class="hctag2">AI Studio</span>
+          <span class="hctag2">Azure TTS/STT</span>
+          <span class="hctag2">OpenAI</span>
+          <span class="hctag2">Dialogflow</span>
+        </div>
+      </div>
+      <div class="hcaward">
+        <span class="hcaico">🏅</span>
+        <div>
+          <div class="hcalbl">Latest Award</div>
+          <div class="hcaval">Tech Maestro · Nov 2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about"><div class="si">
+  <div class="shdr"><span class="ey">01. About Me</span><h2 class="sh">Who Am I</h2></div>
+  <div class="agrid">
+    <div>
+      <div class="aava">
+        <img src="vaibhav-photo.jpg" alt="Vaibhavkumar Yadav" onerror="this.style.display='none';document.getElementById('avinit').style.display='flex'" style="width:100%;height:100%;object-fit:cover;border-radius:22px;display:block">
+        <span id="avinit" class="ainit" style="display:none">VY</span>
+      </div>
+    </div>
+    <div class="atxt">
+      <p>A passionate Genesys Cloud developer with over <strong>7 years at Infosys</strong>, specializing in cloud-based contact center solutions for Healthcare and E-commerce.</p>
+      <p>As <strong>Package Consultant 2 and Genesys Cloud SME</strong>, I design and build intelligent IVR flows, AI-powered chatbots, and omnichannel solutions using Genesys Cloud CX, AI Studio, and the Genesys Cloud SDK.</p>
+      <p>I integrate cutting-edge AI — <strong>Azure TTS/STT, OpenAI/ChatGPT, Google Dialogflow, Observe.AI, and Moveworks</strong> — to deliver personalized, AI-aware customer experiences.</p>
+      <div class="adet">
+        <div class="arow"><span class="albl">LOCATION</span><span class="aval">Richardson, Texas, USA</span></div>
+        <div class="arow"><span class="albl">COMPANY</span><span class="aval">Infosys Limited</span></div>
+        <div class="arow"><span class="albl">ROLE</span><span class="aval">Package Consultant 2 — Genesys Cloud SME</span></div>
+        <div class="arow"><span class="albl">EMAIL</span><span class="aval">yadavvaibhavkumar7&#64;gmail.com</span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- EXPERTISE -->
+<section id="expertise"><div class="si">
+  <div class="shdr"><span class="ey">02. Core Expertise</span><h2 class="sh">What I Build on Genesys Cloud</h2><p class="ss">End-to-end contact center engineering across flows, AI, APIs, and omnichannel.</p></div>
+  <div class="egrid">
+    <div class="ecard"><div class="eico eb">🏗️</div><div class="etitle">Architect & Flow Designer</div><div class="edesc">IVR call flows, bot flows, inbound/outbound voice using Genesys Cloud Architect with intent routing and conditional branching.</div><div class="etags"><span class="etag">Inbound Call Flow</span><span class="etag">Bot Flow</span><span class="etag">In-Queue</span></div></div>
+    <div class="ecard"><div class="eico et">🔗</div><div class="etitle">Data Actions & Integrations</div><div class="edesc">Custom Data Actions connecting Genesys Cloud to CRMs, REST APIs — fetching live customer data mid-call in real-time.</div><div class="etags"><span class="etag">REST API</span><span class="etag">CRM</span><span class="etag">OAuth2</span></div></div>
+    <div class="ecard"><div class="eico eg">💬</div><div class="etitle">Web Messaging & Chatbots</div><div class="edesc">Genesys Messenger with NLU intents, entity extraction, slot filling, and seamless human escalation across all channels.</div><div class="etags"><span class="etag">Messenger</span><span class="etag">NLU</span><span class="etag">Escalation</span></div></div>
+    <div class="ecard"><div class="eico ep">🧠</div><div class="etitle">AI & Predictive Engagement</div><div class="edesc">Azure TTS/STT, OpenAI journey summaries, Genesys AI scoring, and predictive routing for best-match agent selection.</div><div class="etags"><span class="etag">Azure TTS/STT</span><span class="etag">OpenAI</span><span class="etag">AI Scoring</span></div></div>
+    <div class="ecard"><div class="eico eb">⚙️</div><div class="etitle">Genesys Cloud APIs & SDK</div><div class="edesc">Full REST API suite and SDK — building custom tools, automating queue management, analytics, and provisioning.</div><div class="etags"><span class="etag">Platform API</span><span class="etag">Analytics API</span><span class="etag">SDK</span></div></div>
+    <div class="ecard"><div class="eico et">🚀</div><div class="etitle">CX as Code & DevOps</div><div class="edesc">Terraform CX as Code, Docker containers, GCP deployments, and CI/CD pipelines on Infosys IDP platform.</div><div class="etags"><span class="etag">Terraform</span><span class="etag">Docker</span><span class="etag">GCP</span></div></div>
+  </div>
+</div></section>
+
+<!-- AI -->
+<section id="ai"><div class="si">
+  <div class="shdr"><span class="ey">03. AI-Aware Development</span><h2 class="sh">Intelligent CX with AI</h2><p class="ss">Real AI tools integrated into live Genesys Cloud production deployments.</p></div>
+  <div class="aigrid">
+    <div class="aicards">
+      <div class="aicard"><div class="aiico">🎙️</div><div><div class="ait">Azure Cognitive Services (TTS/STT)</div><div class="aid">Azure Speech Studio for natural voice IVR — high-quality prompt generation and speech-to-text transcription inside Genesys Architect flows.</div></div></div>
+      <div class="aicard"><div class="aiico">🤖</div><div><div class="ait">OpenAI & ChatGPT</div><div class="aid">Customer journey summaries, personalized IVR experiences, and real-time agent-assist suggestions improving CSAT and FCR.</div></div></div>
+      <div class="aicard"><div class="aiico">💬</div><div><div class="ait">Google Dialogflow NLU</div><div class="aid">Intent-driven voicebots and chatbots integrated with Genesys Cloud, WhatsApp, Facebook Messenger, and Webex SDK.</div></div></div>
+      <div class="aicard"><div class="aiico">📊</div><div><div class="ait">Observe.AI & Predictive Routing</div><div class="aid">Real-time agent coaching with Observe.AI; Genesys predictive routing and AI scoring for optimal customer-agent matching.</div></div></div>
+    </div>
+    <div class="aiflow">
+      <div class="afvt">// AI-Powered Call Flow — Production</div>
+      <div class="afs">
+        <div class="afstep"><div class="afn">1</div><div class="afl">Customer contacts via Voice / Web Chat / WhatsApp</div></div>
+        <div class="afcon"></div>
+        <div class="afstep"><div class="afn">2</div><div class="afl">Genesys Architect — IVR / Bot Flow entry</div></div>
+        <div class="afcon"></div>
+        <div class="afstep"><div class="afn">3</div><div class="afl">Dialogflow NLU — intent & entity detection</div></div>
+        <div class="afcon"></div>
+        <div class="afstep"><div class="afn">4</div><div class="afl">Data Action — live CRM lookup via REST API</div></div>
+        <div class="afcon"></div>
+        <div class="afstep"><div class="afn">5</div><div class="afl">Predictive Routing — AI best-match agent</div></div>
+        <div class="afcon"></div>
+        <div class="afstep"><div class="afn">6</div><div class="afl">Observe.AI — real-time agent coaching</div></div>
+        <div class="afcon"></div>
+        <div class="afstep"><div class="afn">7</div><div class="afl">OpenAI — auto wrap-up summary generated</div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- EXPERIENCE -->
+<section id="experience"><div class="si">
+  <div class="shdr"><span class="ey">04. Career Timeline</span><h2 class="sh">7+ Years at Infosys</h2><p class="ss">Continuous growth from System Engineer to Package Consultant 2, specializing in Genesys Cloud CX.</p></div>
+  <div class="tl">
+    <div class="tli"><div class="tld cur"></div><div class="tlc"><div class="tlp">OCT 2025 — PRESENT</div><div class="tlr">Package Consultant 2 — Genesys Cloud SME</div><div class="tlco">Infosys Limited</div><div class="tll">📍 Richardson, TX, USA</div><div class="tltags"><span class="tltag">Genesys Cloud CX</span><span class="tltag">AI Studio</span><span class="tltag">OpenAI</span><span class="tltag">CX Architecture</span></div></div></div>
+    <div class="tli"><div class="tld"></div><div class="tlc"><div class="tlp">FEB 2023 — SEP 2025 · 2.5 yrs</div><div class="tlr">Consultant — Contact Center Modernization Lead</div><div class="tlco">Infosys Limited</div><div class="tll">📍 United States · Healthcare Domain</div><div class="tltags"><span class="tltag">Architect</span><span class="tltag">Azure TTS/STT</span><span class="tltag">Dialogflow</span><span class="tltag">Power Automate</span></div></div></div>
+    <div class="tli"><div class="tld"></div><div class="tlc"><div class="tlp">JUN 2021 — JAN 2023 · 1.5 yrs</div><div class="tlr">Technology Analyst — Genesys & API Developer</div><div class="tlco">Infosys Limited</div><div class="tll">📍 Pune, India · Automotive & IT Domains</div><div class="tltags"><span class="tltag">Genesys SDK</span><span class="tltag">Spring Boot</span><span class="tltag">React JS</span><span class="tltag">GCP</span></div></div></div>
+    <div class="tli"><div class="tld"></div><div class="tlc"><div class="tlp">NOV 2018 — MAY 2021 · 2.5 yrs</div><div class="tlr">Senior System Engineer & System Engineer</div><div class="tlco">Infosys Limited</div><div class="tll">📍 Bengaluru, India · E-Commerce Domain</div><div class="tltags"><span class="tltag">Java</span><span class="tltag">Spring Boot</span><span class="tltag">Python</span><span class="tltag">Oracle DB</span></div></div></div>
+  </div>
+</div></section>
+
+<!-- PROJECTS -->
+<section id="projects"><div class="si">
+  <div class="shdr"><span class="ey">05. Key Projects</span><h2 class="sh">Real Genesys Cloud Deployments</h2><p class="ss">Hover each card to reveal tech stack and key achievements.</p></div>
+  <div class="pgrid">
+    <div class="flip"><div class="finner"><div class="ff"><div class="ffico">🏥</div><div class="fft">Contact Center Modernization</div><div class="ffs">Leading Healthcare Org · Feb 2023 – Present</div></div><div class="fb"><div class="fbt">Key Achievements</div><div class="fbd">Architect + AI Studio · Azure TTS/STT · OpenAI summaries · Predictive routing · Power Automate · Moveworks · Observe.AI</div></div></div></div>
+    <div class="flip"><div class="finner"><div class="ff"><div class="ffico">⚙️</div><div class="fft">Genesys Configuration Tool</div><div class="ffs">German Automotive Corp · Jun – Dec 2021</div></div><div class="fb"><div class="fbt">Key Achievements</div><div class="fbd">Java · Spring Boot · Genesys Cloud SDK · React JS · GCP Docker · CI/CD Infosys IDP · JUnit + Mockito</div></div></div></div>
+    <div class="flip"><div class="finner"><div class="ff"><div class="ffico">🔗</div><div class="fft">API Integration Framework</div><div class="ffs">German Automotive Corp · May 2022 – Jan 2023</div></div><div class="fb"><div class="fbt">Key Achievements</div><div class="fbd">Java + Spring Boot · Abstract design patterns · MySQL · MongoDB · SOAP · JUnit + Mockito</div></div></div></div>
+    <div class="flip"><div class="finner"><div class="ff"><div class="ffico">🤖</div><div class="fft">CDA Lab — Voice Bot & Chatbot</div><div class="ffs">US IT & Networking Co · Jan – Apr 2022</div></div><div class="fb"><div class="fbt">Key Achievements</div><div class="fbd">Google Dialogflow + ASR/TTS · WhatsApp & Facebook · React JS SPA · Cisco PCCE · VAV</div></div></div></div>
+    <div class="flip"><div class="finner"><div class="ff"><div class="ffico">🛒</div><div class="fft">Reliance Retail — AJIO</div><div class="ffs">Indian Fashion & Electronics · 2018 – 2021</div></div><div class="fb"><div class="fbt">Key Achievements</div><div class="fbd">Java + Microservices · Oracle DB · Python dashboards · Cron automation · IBM Sterling</div></div></div></div>
+  </div>
+</div></section>
+
+<!-- SKILLS -->
+<section id="skills"><div class="si">
+  <div class="shdr"><span class="ey">06. Technical Skills</span><h2 class="sh">Genesys-First Stack</h2></div>
+  <div class="swrap">
+    <div>
+      <div class="sgt"><span class="sgd"></span>Genesys Cloud (Primary)</div>
+      <div class="sitems">
+        <div><div class="skrow"><span class="skn">Genesys Architect (IVR/Bot Flows)</span><span class="skp">95%</span></div><div class="sktrk"><div class="skf" data-p="95"></div></div></div>
+        <div><div class="skrow"><span class="skn">Genesys AI Studio</span><span class="skp">93%</span></div><div class="sktrk"><div class="skf" data-p="93"></div></div></div>
+        <div><div class="skrow"><span class="skn">Data Actions & Integrations</span><span class="skp">92%</span></div><div class="sktrk"><div class="skf" data-p="92"></div></div></div>
+        <div><div class="skrow"><span class="skn">Genesys Cloud SDK & APIs</span><span class="skp">90%</span></div><div class="sktrk"><div class="skf" data-p="90"></div></div></div>
+        <div><div class="skrow"><span class="skn">Predictive Routing & AI Scoring</span><span class="skp">88%</span></div><div class="sktrk"><div class="skf" data-p="88"></div></div></div>
+        <div><div class="skrow"><span class="skn">Web Messaging & Chatbots</span><span class="skp">88%</span></div><div class="sktrk"><div class="skf" data-p="88"></div></div></div>
+      </div>
+      <br>
+      <div class="sgt" style="margin-top:4px"><span class="sgd"></span>AI & Integrations</div>
+      <div class="sitems">
+        <div><div class="skrow"><span class="skn">Azure Cognitive Services (TTS/STT)</span><span class="skp">88%</span></div><div class="sktrk"><div class="skf tl" data-p="88"></div></div></div>
+        <div><div class="skrow"><span class="skn">OpenAI / ChatGPT</span><span class="skp">85%</span></div><div class="sktrk"><div class="skf tl" data-p="85"></div></div></div>
+        <div><div class="skrow"><span class="skn">Google Dialogflow</span><span class="skp">85%</span></div><div class="sktrk"><div class="skf tl" data-p="85"></div></div></div>
+        <div><div class="skrow"><span class="skn">Java / Spring Boot</span><span class="skp">82%</span></div><div class="sktrk"><div class="skf lo" data-p="82"></div></div></div>
+        <div><div class="skrow"><span class="skn">Python</span><span class="skp">78%</span></div><div class="sktrk"><div class="skf lo" data-p="78"></div></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="sgt"><span class="sgd"></span>Genesys Cloud Technologies</div>
+      <div class="chips" style="margin-bottom:20px">
+        <span class="chip p">Genesys Cloud CX</span><span class="chip p">Genesys Architect</span>
+        <span class="chip p">Genesys AI Studio</span><span class="chip p">Genesys Cloud SDK</span>
+        <span class="chip p">Data Actions</span><span class="chip p">Predictive Routing</span>
+        <span class="chip p">Genesys Messenger</span><span class="chip p">CX as Code</span>
+        <span class="chip p">Genesys Analytics</span>
+      </div>
+      <div class="sgt"><span class="sgd"></span>AI & Platform Integrations</div>
+      <div class="chips" style="margin-bottom:20px">
+        <span class="chip">Azure TTS/STT</span><span class="chip">OpenAI/ChatGPT</span>
+        <span class="chip">Google Dialogflow</span><span class="chip">Observe.AI</span>
+        <span class="chip">Moveworks</span><span class="chip">Power Automate</span>
+        <span class="chip">Microsoft Copilot</span>
+      </div>
+      <div class="sgt"><span class="sgd"></span>Supporting Tech</div>
+      <div class="chips">
+        <span class="chip">Java / Spring Boot</span><span class="chip">Python</span>
+        <span class="chip">React JS</span><span class="chip">Docker / GCP</span>
+        <span class="chip">MySQL / MongoDB</span><span class="chip">Terraform</span>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications"><div class="si">
+  <div class="shdr"><span class="ey">07. Certifications</span><h2 class="sh">11 Professional Credentials</h2></div>
+  <div class="cgrid">
+    <div class="ccard"><div class="cico">📞</div><div class="cn">Contact Center Platform Professional</div><div class="ci">Infosys Certified</div></div>
+    <div class="ccard"><div class="cico">🔗</div><div class="cn">Contact Center Technology & Integrations</div><div class="ci">Infosys Certified</div></div>
+    <div class="ccard"><div class="cico">🎧</div><div class="cn">Contact Center Professional</div><div class="ci">Infosys Certified</div></div>
+    <div class="ccard"><div class="cico">🤖</div><div class="cn">Applied Generative AI Professional</div><div class="ci">Infosys Certified</div></div>
+    <div class="ccard"><div class="cico">🧠</div><div class="cn">AI Consumer</div><div class="ci">Infosys Certified</div></div>
+    <div class="ccard"><div class="cico">📡</div><div class="cn">IoT Professional</div><div class="ci">Infosys Certified</div></div>
+    <div class="ccard"><div class="cico">⚡</div><div class="cn">Global Agile Developer</div><div class="ci">Infosys Certified</div></div>
+    <div class="ccard"><div class="cico">🐍</div><div class="cn">Python Associate</div><div class="ci">Infosys Certified</div></div>
+    <div class="ccard"><div class="cico">☕</div><div class="cn">Java SE8 Developer – 101</div><div class="ci">Infosys Certified</div></div>
+    <div class="ccard"><div class="cico">📊</div><div class="cn">AI Strategy Certification</div><div class="ci">eCornell</div></div>
+    <div class="ccard"><div class="cico">💬</div><div class="cn">Business Communication Level 6</div><div class="ci">Infosys</div></div>
+  </div>
+</div></section>
+
+<!-- AWARDS -->
+<section id="awards"><div class="si">
+  <div class="shdr"><span class="ey">08. Recognition</span><h2 class="sh">7 Awards Won</h2></div>
+  <div class="agrow">
+    <div class="awcard"><div class="awico">🏅</div><div class="awn">Excellence — Tech Maestro</div><div class="awo">Infosys · Nov 2025</div></div>
+    <div class="awcard"><div class="awico">🌟</div><div class="awn">RISE Tech/Domain Maestro</div><div class="awo">Infosys · Jan 2025</div></div>
+    <div class="awcard"><div class="awico">🏆</div><div class="awn">RISE Most Valuable Player</div><div class="awo">Infosys · Jan 2024</div></div>
+    <div class="awcard"><div class="awico">⚡</div><div class="awn">Insta Award</div><div class="awo">Infosys · Jan 2022</div></div>
+    <div class="awcard"><div class="awico">⚡</div><div class="awn">Insta Award</div><div class="awo">Infosys · Jan 2021</div></div>
+    <div class="awcard"><div class="awico">🎖️</div><div class="awn">Pride Award</div><div class="awo">Infosys · Jan 2020</div></div>
+    <div class="awcard"><div class="awico">⚡</div><div class="awn">Insta Award</div><div class="awo">Infosys · Jan 2019</div></div>
+  </div>
+</div></section>
+
+<!-- PATENT -->
+<section id="patent"><div class="si">
+  <div class="shdr"><span class="ey">09. Intellectual Property</span><h2 class="sh">Patent</h2></div>
+  <div class="ptcard">
+    <div class="ptico">💡</div>
+    <div>
+      <div class="ptlbl">Granted Patent</div>
+      <div class="ptt">Smart Home Automation using Virtue of IoT</div>
+      <div class="ptd">A patented IoT system enabling intelligent smart home automation — controlling devices, energy consumption, and security through a unified framework with real-time monitoring and automated decision logic.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- EDUCATION -->
+<section id="education"><div class="si">
+  <div class="shdr"><span class="ey">10. Education</span><h2 class="sh">Academic Background</h2></div>
+  <div class="educard">
+    <div class="eduico">🎓</div>
+    <div>
+      <div class="edud">Bachelor of Engineering — Computer Engineering</div>
+      <div class="edus">Savitribai Phule Pune University</div>
+      <div class="edup">Sep 2013 — Jun 2017 · Pune, Maharashtra, India</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- CONTACT -->
+<section id="contact"><div class="si">
+  <div class="shdr"><span class="ey">11. Contact</span><h2 class="sh">Let's Work Together</h2><p class="ss">Open to Genesys Cloud projects, CX consulting, AI integrations, and full-time opportunities.</p></div>
+  <div class="ctgrid">
+    <div class="ctitems">
+      <div class="ctitem"><div class="ctico">📧</div><div><div class="ctlbl">Email</div><a class="ctval" href="mailto:yadavvaibhavkumar7@gmail.com">yadavvaibhavkumar7&#64;gmail.com</a></div></div>
+      <div class="ctitem"><div class="ctico">📱</div><div><div class="ctlbl">Phone</div><a class="ctval" href="tel:+19455420116">+1 945-542-0116</a></div></div>
+      <div class="ctitem"><div class="ctico">🔗</div><div><div class="ctlbl">LinkedIn</div><a class="ctval" href="https://www.linkedin.com/in/vaibhavkumar-yadav-633552233" target="_blank">vaibhavkumar-yadav-633552233</a></div></div>
+      <div class="ctitem"><div class="ctico">📍</div><div><div class="ctlbl">Location</div><span class="ctval">Richardson, Texas, USA</span></div></div>
+    </div>
+    <div class="formbox">
+      <div class="formh">Send Me a Message</div>
+      <form id="cform" onsubmit="sendMsg(event)">
+        <div class="frow">
+          <div class="fg"><label class="fl">Your Name</label><input id="fname" class="fi" placeholder="John Smith" required></div>
+          <div class="fg"><label class="fl">Your Email</label><input id="femail" type="email" class="fi" placeholder="john@company.com" required></div>
+        </div>
+        <div class="fg"><label class="fl">Subject</label><input id="fsubj" class="fi" placeholder="Genesys Cloud Project Inquiry" required></div>
+        <div class="fg"><label class="fl">Message</label><textarea id="fmsg" class="fi fta" placeholder="Tell me about your project or opportunity..." required></textarea></div>
+        <button type="submit" class="fbtn" id="fsbtn"><span id="fbtntext">Send Message →</span></button>
+        <div id="fstatus" class="fstat"></div>
+      </form>
+    </div>
+  </div>
+</div></section>
+
+<footer>
+  <div class="ftlogo">Vaibhavkumar Yadav</div>
+  <div class="fttxt">© 2025 · Genesys Cloud CX Developer & Architect · Richardson, TX</div>
+  <div class="ftlinks">
+    <a href="Vaibhav_Yadav_Resume.pdf" download class="ftlink">Resume ↓</a>
+    <a href="https://www.linkedin.com/in/vaibhavkumar-yadav-633552233" target="_blank" class="ftlink">LinkedIn ↗</a>
+    <a href="mailto:yadavvaibhavkumar7@gmail.com" class="ftlink">Email ✉</a>
+  </div>
+</footer>
+
+<script>
+// ── 3D BACKGROUND ──────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('canvas3d'), alpha: true, antialias: true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 1000);
+camera.position.z = 70;
+
+const pGeo = new THREE.BufferGeometry();
+const pCount = 1800;
+const pPos = new Float32Array(pCount * 3);
+const pVel = new Float32Array(pCount * 3);
+for (let i = 0; i < pCount * 3; i++) { pPos[i] = (Math.random() - 0.5) * 280; pVel[i] = (Math.random() - 0.5) * 0.035; }
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+const pMat = new THREE.PointsMaterial({color: 0x3B8EFF, size: 0.32, transparent: true, opacity: 0.45});
+const particles = new THREE.Points(pGeo, pMat);
+scene.add(particles);
+
+const shapes = [
+  [new THREE.SphereGeometry(20,22,22), 0x1B6FE8, 0.06, [48,-6,-40]],
+  [new THREE.TorusGeometry(13,2.2,10,30), 0x00C9A7, 0.09, [-52,14,-22]],
+  [new THREE.IcosahedronGeometry(8,1), 0x3B8EFF, 0.13, [8,-28,-12]],
+  [new THREE.TorusGeometry(7,1.5,8,20), 0x1B6FE8, 0.08, [-18,24,-28]],
+  [new THREE.OctahedronGeometry(10,0), 0x00C9A7, 0.07, [30,20,-35]],
+];
+const meshes = shapes.map(([geo,col,op,pos]) => {
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color:col, wireframe:true, transparent:true, opacity:op}));
+  m.position.set(...pos); scene.add(m); return m;
+});
+
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => { mx = (e.clientX/innerWidth-.5)*2; my = (e.clientY/innerHeight-.5)*2; });
+
+(function animate() {
+  requestAnimationFrame(animate);
+  const t = Date.now() * 0.001;
+  const pos = particles.geometry.attributes.position.array;
+  for (let i = 0; i < pCount*3; i++) { pos[i] += pVel[i]; if (Math.abs(pos[i]) > 140) pVel[i] *= -1; }
+  particles.geometry.attributes.position.needsUpdate = true;
+  particles.rotation.y = t * 0.016; particles.rotation.x = t * 0.008;
+  meshes[0].rotation.y = t*.07; meshes[0].rotation.x = t*.03;
+  meshes[1].rotation.x = t*.11; meshes[1].rotation.z = t*.07;
+  meshes[2].rotation.x = t*.17; meshes[2].rotation.y = t*.13;
+  meshes[3].rotation.y = t*.14; meshes[3].rotation.x = t*.09;
+  meshes[4].rotation.y = t*.08; meshes[4].rotation.z = t*.05;
+  camera.position.x += (mx*10 - camera.position.x) * 0.022;
+  camera.position.y += (-my*7 - camera.position.y) * 0.022;
+  camera.lookAt(scene.position);
+  renderer.render(scene, camera);
+})();
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
+});
+
+// ── CURSOR ──────────────────────────────────────────────────────────
+const cur = document.getElementById('cur'), dot = document.getElementById('curdot');
+let cx = 0, cy = 0, tx = 0, ty = 0;
+document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; dot.style.left = tx+'px'; dot.style.top = ty+'px'; });
+(function moveCur() { cx += (tx-cx)*.16; cy += (ty-cy)*.16; cur.style.left = cx+'px'; cur.style.top = cy+'px'; requestAnimationFrame(moveCur); })();
+document.querySelectorAll('a,button,.ecard,.ccard,.awcard,.flip,.aicard,.toggle-pill').forEach(el => {
+  el.addEventListener('mouseenter', () => { cur.style.width='36px'; cur.style.height='36px'; cur.style.background='rgba(27,111,232,.1)'; cur.style.borderColor='var(--teal)'; });
+  el.addEventListener('mouseleave', () => { cur.style.width='18px'; cur.style.height='18px'; cur.style.background=''; cur.style.borderColor='var(--brand)'; });
+});
+
+// ── SCROLL REVEAL ────────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, {threshold: 0.1, rootMargin: '0px 0px -40px 0px'});
+document.querySelectorAll('.ecard,.tli,.ccard,.awcard,.aicard').forEach((el, i) => {
+  el.style.transitionDelay = (i % 6) * 0.07 + 's';
+  obs.observe(el);
+});
+// SME card — same animation as ecard
+const hcw = document.getElementById('hcwrap');
+if (hcw) obs.observe(hcw);
+
+// ── SKILL BARS ───────────────────────────────────────────────────────
+const skObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { document.querySelectorAll('.skf').forEach(b => { setTimeout(() => b.style.width = b.dataset.p + '%', 150); }); skObs.disconnect(); } });
+}, {threshold: 0.15});
+const skSec = document.getElementById('skills');
+if (skSec) skObs.observe(skSec);
+
+// ── COUNTERS ─────────────────────────────────────────────────────────
+document.querySelectorAll('.snum[data-count]').forEach(el => {
+  const co = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const target = parseInt(e.target.dataset.count);
+        let c = 0; const step = Math.ceil(target/50);
+        const iv = setInterval(() => { c = Math.min(c+step, target); e.target.textContent = c+'+'; if (c >= target) clearInterval(iv); }, 35);
+        co.unobserve(e.target);
+      }
+    });
+  }, {threshold: 0.7});
+  co.observe(el);
+});
+
+// ── DARK MODE TOGGLE ─────────────────────────────────────────────────
+let isDark = true;
+function toggleDark() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('darkToggle').classList.toggle('on', isDark);
+  pMat.color.setHex(isDark ? 0x4A90D9 : 0x3B8EFF);
+}
+
+// ── WEB3FORMS ────────────────────────────────────────────────────────
+const W3F_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY';
+function sendMsg(ev) {
+  ev.preventDefault();
+  const btn = document.getElementById('fsbtn');
+  const txt = document.getElementById('fbtntext');
+  const stat = document.getElementById('fstatus');
+  const name = document.getElementById('fname').value.trim();
+  const email = document.getElementById('femail').value.trim();
+  const subj = document.getElementById('fsubj').value.trim();
+  const msg = document.getElementById('fmsg').value.trim();
+  btn.disabled = true; txt.textContent = 'Sending…'; stat.className = 'fstat';
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+    body: JSON.stringify({access_key: W3F_KEY, name, email, subject: subj, message: msg, from_name: name, replyto: email, botcheck: ''})
+  }).then(r => r.json()).then(d => {
+    if (d.success) { stat.textContent = '✓ Message sent! Vaibhav will get back to you soon.'; stat.className = 'fstat ok show'; document.getElementById('cform').reset(); }
+    else throw new Error(d.message);
+  }).catch(() => {
+    if (W3F_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY') { stat.textContent = '⚙️ Setup needed: add your Web3Forms key.'; stat.className = 'fstat err show'; }
+    else { stat.textContent = '✗ Could not send. Please try again.'; stat.className = 'fstat err show'; }
+  }).finally(() => { txt.textContent = 'Send Message →'; btn.disabled = false; });
+}
+</script>
+</body>
+</html>
